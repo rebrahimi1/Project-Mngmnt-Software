@@ -1,0 +1,201 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css" />
+    <title>Dashboard</title>
+    <style>
+            body {
+                font-family:"Times New Roman", serif
+            }
+            h1,h2,h3,h4,h5,h6 {
+                font-family:serif; letter-spacing:5px
+            }
+    </style>
+</head>
+
+<body>
+        
+
+
+
+    <span class="bckg"></span>
+<header>
+  <h1>Dashboard</h1>
+  <nav>
+    <ul>
+      <li>
+        <button id="stall" data-title="Project Status">Project Status</button>
+      </li>
+      <li>
+        <button id="rqall" data-title="Requirements">Requirements</button>
+      </li>
+      <li>
+        <button id="rqa10" data-title="Add Requirements"> Add Requirements</button>
+      </li>
+
+    </ul>
+  </nav>
+</header>
+<main>
+  <div class="title">
+    <h2>Projects</h2>
+    <a>Hello Bob !</a>
+  </div>
+
+  <article id="st4" class="larg" hidden>
+    <h2 hidden><%= pIde %> </h2>
+    <% risksInfo.forEach(function(item) { %>
+        <div id="d1">
+          <h2><%= item.riskdes %></h2>
+          <h2 id="st1"><%= item.status %></h2>
+          <h2 id="sid" hidden><%= item._id %></h2>
+          <form action="/riskdel" method="post">
+            <input type="text" name="rmmv" value="<%= pIde %>" hidden>
+            <button name="rmv9" value="<%= item._id %>" onchange="this.form.submit()">Remove</button>
+          </form>
+            
+            <button id="b1">Change Status</button>
+            <div id="dv1" hidden>
+              <form action="/high" method="post">
+                <input type="text" name="hg3" value="<%= pIde %>" hidden>
+                <input type="text" name="hg2" value="<%= item._id %>" hidden>
+                <button type="submit" name="hg1" value="High" onchange="this.form.submit()">High</button>
+              </form>
+              <form action="/low" method="post">
+                <input type="text" name="lw3" value="<%= pIde %>" hidden>
+                <input type="text" name="lw2" value="<%= item._id %>" hidden>
+                <button type="submit" name="lw1" value="Low" onchange="this.form.submit()">Low</button>
+              </form>
+              <form action="/medium" method="post">
+                <input type="text" name="med3" value="<%= pIde %>" hidden>
+                <input type="text" name="med2" value="<%= item._id %>" hidden>
+                <button type="submit" name="med1" value="Medium" onchange="this.form.submit()">Medium</button>
+              </form>
+            </div>
+            
+            <div id="rskinf"></div>
+
+
+        </div>
+
+        <br>
+
+
+    <% }) %>
+  </article>
+
+  
+<article id="rq4" class="larg" hidden>
+    <% reqInfo.forEach(function(itemz) { %>
+        <div id="d2">
+          <h2 id="rf1"><%= itemz.funcreq %></h2>
+        <h2 id="pid2" hidden><%= itemz.pid %></h2>
+        <h2 id="rqsid" hidden><%= itemz._id %></h2>
+        <h2><%= itemz.design %></h2>
+        <h2><%= itemz.reqanlsys%></h2>
+        <h2><%= itemz.coding %></h2>
+        <h2><%= itemz.testing %></h2>
+        <h2><%= itemz.pm %></h2>
+        <form action="/reqdel" method="post">
+          <input type="text" name="pidz" value="<%= pIde %>" hidden>
+          <button name="rdl" value="<%= itemz._id %>" onchange="this.form.submit()">Remove</button>
+        </form>
+          
+        
+          <button id="b3">Add Monitoring</button>
+  
+        <div id="rqkinf"></div>
+
+        <div id="mon1" hidden>
+          <form action="/monitor" method="post">
+          <input type="text" name="rq1" value="<%= itemz.reqanlsys%>">
+          <input type="text" name="ds1" value="<%= itemz.design%>">
+          <input type="text" name="cod1" value="<%= itemz.coding%>">
+          <input type="text" name="t1" value="<%= itemz.testing%>">
+          <input type="text" name="pm1" value="<%= itemz.pm%>">
+          <input type="text" name="pid5" value="<%= itemz.pid %>" hidden>
+          <button type="submit" name="addMts" value="<%= itemz._id %>" onchange="this.form.submit()">Add</button>
+          </form>
+          
+        </div>
+
+
+        </div>
+        
+        <br>
+        <br>
+        <hr>
+
+    <% }) %>
+
+</article>
+
+
+<article id="ar3" class="larg" hidden>
+  <form action="/reqs" method="post">
+  
+    <label>Requirements <span class="required">*</span></label>
+    <input type="text" name="reqf" class="field-divided" placeholder="Functional Req" /> 
+        <button type="submit" name="addrq" value="<%= ppId %>" onchange="this.form.submit()">add</button>
+
+</form>
+</article>
+
+
+
+
+</main>
+
+
+<script>
+    $("#stall").click(() => {
+      $("#ar3").hide()
+        $("#rq4").hide()
+        $("#st4").show()
+      })
+
+      $("#rqall").click(() => {
+        $("#ar3").hide()
+        $("#st4").hide()
+        $("#rq4").show()
+      })
+      $("#rqa10").click(() => {
+        $("#st4").hide()
+        $("#rq4").hide()
+        $("#ar3").show()
+      })
+
+
+
+
+
+
+
+      $("#b2").click(() => {
+        var abb = $("#rqsid").text();
+        $.post('http://localhost:3000/reqz/upd', {msg: abb})
+
+      })
+
+      $("#b1").click(() => {
+        $("#st1").empty()
+        $("#b1").hide()
+        $("#dv1").show()
+      })
+
+
+
+
+      $('button[id="b3"]').click(() => {
+        $('div[id="mon1"]').show()
+      })
+
+
+</script>
+     
+</body>
+</html>
