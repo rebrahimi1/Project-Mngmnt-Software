@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Project</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
+  <link rel="stylesheet" href="css/project.css" />
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="profile">
+    <span class="owner"><%= usInfo.name %> </span>
+    <span class="roll"><%= usInfo.teamName %> </span>
+  </div>
+  <ul class="nav">
+    <li class=active>
+      <button class="abt">Home</button>
+    </li>
+    <li class=active>
+      <button class="abt"><i class="fa fa-home"></i>Project Details</button>
+    </li>
+    <li class="active">
+
+      <form action="/requirement" method="get">
+        <button type="submit" name="pid" value="<%= pIde %> " class="abt">Requirements</button>
+      </form>
+      
+    </li>
+
+    <li class="active">
+
+      <form action="/monitor" method="get">
+        <button type="submit" name="pid" value="<%= pIde %> " class="abt">Monitoring</button>
+      </form>
+
+    </li>
+
+    <li class="active">
+
+      <form action="/status" method="get">
+        <button type="submit" name="pid" value="<%= pIde %> " class="abt">Project Status</button>
+      </form>
+
+    </li>
+
+    <li class="btmn">
+
+      <form action="/logout" method="post">
+        <button type="submit" class="btt">Logout</button>
+      </form>
+
+    </li>
+
+  </ul>
+  <a href="#" class="settings">
+    <i class="fa fa-cog"></i>
+  </a>
+</div>
+
+<button class="toggle-button">
+  <i class="fa fa-bars"></i>
+  <i class="fa fa-arrows-alt"></i>
+</button>
+
+<!-- Usual html, responsive -->
+<article>
+  <div class="container">
+   
+    <div class="main">
+        <h1 style="text-align: center;">Project Details</h1>
+        
+      
+      <p>Description: <%= projInfo.desc %> </p>
+      <p>Owner: <%= projInfo.owner %></p>
+      <p>Key Id: </p>
+      
+      <hr>
+      <form action="/newmbr" method="post">
+      <fieldset id="fieldset-sign-up">
+        <legend>Add Member</legend>
+
+        <label>
+          Member Name
+          <input type="text"
+                 name="mbnm"
+                 required>
+        </label>
+
+        <label>
+            Member Email
+            <input type="email"
+                   name="mbemail"
+                   required>
+          </label>
+
+          <label>
+            Member Title
+            <select name="mbttl">
+                <option value="">Title:</option>
+                <option value="Scrum">Scrum</option>
+                <option value="Developer">Developer</option>
+                <option value="UI/UX">UI/UX</option>
+                <option value="Tester">Tester</option>
+                <option value="QA">QA</option>
+              </select>
+          </label>
+
+
+
+        
+          <button type="submit" name="pid" value="<%= pIde %>" onchange="this.form.submit()" class="next">Add</button>
+        </form>
+        
+      </fieldset>
+        
+      </div>
+
+    <!-- <form class="reqform">
+
+      
+    </form> -->
+  
+    <div style="overflow-x: auto;">
+
+        <table>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Title</th>
+            <th>Action</th>
+          </tr>
+          
+          <tr>
+            <% mbrInfo.forEach(function(item) { %>
+            <td>
+              <%= item.member %> 
+            </td>
+            <td>
+              <%= item.email %>
+            </td>
+            <td>
+              <%= item.title %>
+            </td>
+
+            <td>
+              <form action="/rmvmbr" method="post">
+                <input name="pid" value="<%= pIde %>" hidden>
+                <button type="submit" name="rvmb" value="<%= item._id %> " onchange="this.form.submit()" class="btnRmv">Remove</button>
+              </form>
+                
+            </td>
+            <% }) %>
+          </tr>
+        </table>
+      </div>
+  </div>
+  
+</article>
+
+  
+
+
+
+   
+  
+
+
+
+
+  <script>
+    $(".toggle-button").on("click", function(){
+      $(".sidebar").toggleClass("active")
+      if ($(".sidebar").hasClass("active"))
+        {
+          $("body").addClass("non-margin")
+        } else {
+          $("body").removeClass("non-margin")
+        }
+    })
+
+
+    var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
+  </script>
+
+    </body>
+</html>
+
+

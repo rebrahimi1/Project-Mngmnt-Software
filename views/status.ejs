@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Project Status</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
+  <link rel="stylesheet" href="css/table.css" />
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="profile">
+      <span class="owner"><%= usInfo.name %> </span>
+      <span class="roll"><%= usInfo.teamName %> </span>
+    </div>
+    <ul class="nav">
+      <li class=active>
+        <form action="/home" method="post">
+          <button type="submit" class="abt">Home</button>
+        </form>
+      </li>
+      <li class=active>
+        <form action="/project" method="get">
+          <button type="submit" name="pid" value="<%= pIde %>" class="abt">Project Details</button>
+        </form>
+        
+      </li>
+      <li class="active">
+  
+        <form action="/requirement" method="get">
+          <button type="submit" name="pid" value="<%= pIde %> " class="abt">Requirements</button>
+        </form>
+        
+      </li>
+  
+      <li class="active">
+  
+        <form action="/monitor" method="get">
+          <button type="submit" name="pid" value="<%= pIde %> " class="abt">Monitoring</button>
+        </form>
+  
+      </li>
+  
+      <li class="active">
+  
+        <form action="/status" method="get">
+          <button type="submit" name="pid" value="<%= pIde %> " class="abt">Project Status</button>
+        </form>
+  
+      </li>
+  
+      <li class="btmn">
+  
+        <form action="/logout" method="post">
+          <button type="submit" class="btt">Logout</button>
+        </form>
+  
+      </li>
+  
+    </ul>
+    <a href="#" class="settings">
+      <i class="fa fa-cog"></i>
+    </a>
+  </div>
+
+<button class="toggle-button">
+  <i class="fa fa-bars"></i>
+  <i class="fa fa-arrows-alt"></i>
+</button>
+
+<!-- Usual html, responsive -->
+<article>
+  <div class="container">
+   
+
+    <form action="/addrisks" method="post" class="reqform">
+      <fieldset id="fieldset-sign-up">
+        <legend>Project Risk Status</legend>
+        <label>
+          Risk Description
+          <input type="text"
+                 name="rskdesc"
+                 required>
+        </label>
+        <label>
+          Status
+          <select name="sts">
+            <option value="">Status:</option>
+            <option value="Good">Good</option>
+            <option value="Medium">Medium</option>
+            <option value="Bad">Bad</option>
+          </select>
+        </label>
+
+
+  
+        <button type="submit" name="pid" value="<%= pIde %>" onchange="this.form.submit()" class="next">Add</button>
+      
+      
+      </fieldset>
+      
+    </form>
+  
+    <div style="overflow-x: auto;">
+
+      <table>
+        <tr>
+          <th>Description</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+        <tr>
+          <% projInfo.risks.forEach(function(item) { %>
+          <td>
+            <%= item.riskdes %> 
+          </td>
+          <td>
+            <form action="/changeStatus" method="post">
+            <select name="statuses" id="">
+              <option value="<%= item.status %>"><%= item.status %></option>
+              <option value="Good">Good</option>
+              <option value="Medium">Medium</option>
+              <option value="Bad">Bad</option>
+            </select>
+
+            
+              <input name="pid" value="<%= pIde %>">
+              <button type="submit" name="stid" value="<%= item._id %>" class="btnch" onchange="this.form.submit()">Change</button>
+            </form>
+            
+
+          </td>
+
+          <td>
+
+            <form action="/riskdel" method="post">
+              <input name="pid" value="<%= pIde %>">
+              <button type="submit" name="rmv9" value="<%= item._id %>" class="btnRmv" onchange="this.form.submit()">Remove</button>
+            </form>
+
+            
+          
+          
+          </td>
+
+          <% }) %>
+
+        </tr>
+
+      </table>
+
+    </div>
+
+  </div>
+  
+</article>
+
+  
+
+
+
+   
+  
+
+
+
+
+  <script>
+    $(".toggle-button").on("click", function(){
+      $(".sidebar").toggleClass("active")
+      if ($(".sidebar").hasClass("active"))
+        {
+          $("body").addClass("non-margin")
+        } else {
+          $("body").removeClass("non-margin")
+        }
+    })
+
+
+    var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
+  </script>
+
+    </body>
+</html>
+
+

@@ -13,12 +13,6 @@ var $ = require("jquery")(window);
 const passport = require("passport");
 // const passportw = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
-// const passportLocalMongoosew = require("passport-local-mongoose");
-// const bcrypt = require("bcrypt");
-// const saltRounds = 10;
-// const md5 = require("md5");
-// const encrypt = require("mongoose-encryption");
-
 const _ = require("lodash");
 // const router = express.Router();
 const fs = require('fs');
@@ -84,9 +78,9 @@ passport.deserializeUser(User.deserializeUser());
 
 const projSchema = new mongoose.Schema({
     key: String,
+    name: String,
     desc: String,
     owner: String,
-    members: String,
     risks: [{riskdes: String, status: String, pida: {type: mongoose.Schema.Types.ObjectId, ref: 'projSchema'}}]
 });
 
@@ -96,11 +90,14 @@ const Project = mongoose.model('Project', projSchema);
 const reqSchema = new mongoose.Schema({
     pid: {type: mongoose.Schema.Types.ObjectId, ref: 'projSchema'},
     funcreq: String,
-    design: String,
-    reqanlsys: String,
-    coding: String,
-    testing: String,
-    pm: String
+    design: Number,
+    reqanlsys: Number,
+    coding: Number,
+    testing: Number,
+    pm: Number,
+    progress: String,
+    assigne: String,
+    details: String
 });
 
 const Requirement = mongoose.model('Requirement', reqSchema);
@@ -108,120 +105,51 @@ const Requirement = mongoose.model('Requirement', reqSchema);
 
 
 
-
-// ****************************** RISKS ***********************
-
-app.post("/risks", function(req, res){
-    Project.findOneAndUpdate({_id: req.body.addSt}, {$push: {risks: [{riskdes: req.body.risk, status: req.body.stats, pida: req.body.addSt}]}}, function(err, result){
-
-        if(err){
-            console.log(err);
-        } else {
-            res.redirect("/lists");
-        }
-
-    });
+const memberSchema = new mongoose.Schema({
+    pid: {type: mongoose.Schema.Types.ObjectId, ref: 'projSchema'},
+    member: String,
+    email: String,
+    title: String
 });
 
-app.post("/riskdel", async (req, res) => {
-    
-    const delreq = await Project.updateMany({}, {$pull: {risks: {_id: req.body.rmv9}}}).exec();
+const Member = mongoose.model('Member', memberSchema);
 
-    res.redirect(`/dashboard?rsk=${req.body.rmmv}`);
-    
-});
 
-app.post("/high", async (req, res) => {
-   
-    const updtsa = await Project.findOneAndUpdate(
-        {
-          "risks._id": req.body.hg2},
-          {$set:{'risks.$.status': req.body.hg1}
-        }
-    ).exec();
-    res.redirect(`/dashboard?rsk=${req.body.hg3}`);
-});
 
-app.post("/low", async (req, res) => {
-   
-    const updtss = await Project.findOneAndUpdate(
-        {
-          "risks._id": req.body.lw2},
-          {$set:{'risks.$.status': req.body.lw1}
-        }
-    ).exec();
-    res.redirect(`/dashboard?rsk=${req.body.lw3}`);
-});
 
-app.post("/medium", async (req, res) => {
-   
-    const updtssz = await Project.findOneAndUpdate(
-        {
-          "risks._id": req.body.med2},
-          {$set:{'risks.$.status': req.body.med1}
-        }
-    ).exec();
-    res.redirect(`/dashboard?rsk=${req.body.med3}`);
+// ******************** HOME ****************
+
+
+app.get("/home", async(req, res) => {
+
+  
+    const getUser = await User.findById(req.user.id).exec();
+    const getProjects = await Project.find({key: req.user.key}).exec();
+    res.render('home', {userInfo: getUser, projInfo: getProjects, key: req.user.key});
+
+
 });
 
 
+app.post("/home", async(req, res) => {
 
-// ****************************** Requirements ***********************
-
-app.post("/monitor", async (req, res) => {
-    const upmn = await Requirement.findOneAndUpdate({_id: req.body.addMts}, {$set: {design: req.body.ds1, reqanlsys: req.body.rq1, coding: req.body.cod1, testing: req.body.t1, pm: req.body.pm1}}).exec();
-    res.redirect(`/dashboard?rsk=${req.body.pid5}`);
-    
-});
-
-
-
-app.post("/reqs", async (req, res) => {
-
-    const newReqz = new Requirement({
-        pid: req.body.addrq,
-        funcreq: req.body.reqf
-    });
-    newReqz.save();
-    res.redirect(`/dashboard?rsk=${req.body.addrq}`);
-});
-
-
-
-app.post("/reqdel", async (req, res) => {
-    const rqdels = await Requirement.findByIdAndRemove(req.body.rdl).exec();
-    res.redirect(`/dashboard?rsk=${req.body.pidz}`);
-});
-
-
-
-
-// ****************************** Dashboard ***********************
-
-app.get("/dashboard", async (req, res) => {
-    const getProjs = await Project.findById(req.query.rsk).exec();
-    const getReks = await Requirement.find({pid: req.query.rsk}).exec();
-    // console.log(getReks);
-    res.render('dashboard', {risksInfo: getProjs.risks, reqInfo: getReks, pIde: req.query.rsk, ppId: req.query.rsk});
+res.redirect("/home");
 
 });
 
 
 
 
-
-
-
-
+// ****************** CREATE NEW PROJECT **************
 
 app.post("/newp", function(req, res){
 
 
     const newProject = new Project({
         key: req.user.key,
-        desc: req.body.des,
-        owner: req.body.owner,
-        members: req.body.memb
+        name: req.body.pname,
+        desc: req.body.prjdesc,
+        owner: req.body.owner
     });
 
     newProject.save();
@@ -229,20 +157,272 @@ app.post("/newp", function(req, res){
 
 });
 
-app.get("/lists", function(req, res){
-Project.find({key: req.user.key}, function(err, results){
-    if(err){
-        res.status(500).send('Ops', err);
-    } else {
-        res.render('lists', {datas: results});
-        
-    }
+
+
+
+
+
+// ****************************** Project ***********************
+
+app.get("/project", async (req, res) => {
+    const getProjs = await Project.findById(req.query.pid).exec();
+    // const getReks = await Requirement.find({pid: req.query.pid}).exec();
+    const getMbr = await Member.find({pid: req.query.pid}).exec();
+    const uInfo = await User.findById(req.user.id).exec();
+    res.render('project', {projInfo: getProjs, pIde: req.query.pid, mbrInfo: getMbr, usInfo: uInfo});
+
 });
+
+
+
+
+// ************ ADD NEW MEMBER ************
+
+app.post("/newmbr", async (req, res) => {
+    const nwmbr = new Member({
+        pid: req.body.pid,
+        member: req.body.mbnm,
+        email: req.body.mbemail,
+        title: req.body.mbttl
+    });
+    nwmbr.save();
+    res.redirect(`/project?pid=${req.body.pid}`);
 });
+
+
+// ************ REMOVE MEMBER ************
+
+app.post("/rmv", async (req, res) => {
+    await Member.findByIdAndDelete(req.body.rvmb).exec();
+    res.redirect(`/project?pid=${req.body.pid}`);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// *********************** PROJECT Risk *********************
+
+app.get("/status", async (req, res) => {
+
+    const getProjssz = await Project.findById(req.query.pid).exec();
+    const uInfosz = await User.findById(req.user.id).exec();
+    res.render('status', {projInfo: getProjssz, pIde: req.query.pid, usInfo: uInfosz});
+
+});
+
+
+// *********************** Add Risk *********************
+
+app.post("/addrisks", function(req, res){
+    Project.findOneAndUpdate({_id: req.body.pid}, {$push: {risks: [{riskdes: req.body.rskdesc, status: req.body.sts, pida: req.body.pid}]}}, function(err, result){
+
+        if(err){
+            console.log(err);
+        } else {
+           res.redirect(`/status?pid=${req.body.pid}`);
+        }
+
+    });
+});
+
+
+
+// *************************** Change Risk Status **************************
+
+app.post("/changeStatus", async (req, res) => {
+   
+    await Project.findOneAndUpdate(
+        {
+          "risks._id": req.body.stid},
+          {$set:{'risks.$.status': req.body.statuses}
+        }
+    ).exec();
+    res.redirect(`/status?pid=${req.body.pid}`);
+});
+
+
+// *************************** Remove Risk **************************
+
+app.post("/riskdel", async (req, res) => {
+    
+    await Project.updateMany({}, {$pull: {risks: {_id: req.body.rmv9}}}).exec();
+
+    res.redirect(`/status?pid=${req.body.pid}`);
+    
+});
+
+
+
+
+
+
+
+
+
+
+
+
+// **************************************************** REQUIREMENTS STARTS ************************************************************
+
+
+
+// ************ Go TO REQUIREMENTS ************
+
+app.get("/requirement", async (req, res) => {
+    const getProjss = await Project.findById(req.query.pid).exec();
+    const getRekss = await Requirement.find({pid: req.query.pid}).exec();
+    const getMbrs = await Member.find({pid: req.query.pid}).exec();
+    const uInfos = await User.findById(req.user.id).exec();
+    res.render('requirement', {projInfo: getProjss, reqInfo: getRekss, pIde: req.query.pid, mbrInfo: getMbrs, mbrInfoz: getMbrs, usInfo: uInfos});
+
+});
+
+
+
+// ************ ADD NEW REQUIREMENT ************
+
+app.post("/addreq", async (req, res) => {
+    const addNewRq = new Requirement({
+        pid: req.body.pid,
+        funcreq: req.body.reqttl,
+        assigne: req.body.asgne,
+        details: req.body.reqdsc
+    });
+
+    addNewRq.save();
+    res.redirect(`/requirement?pid=${req.body.pid}`);
+});
+
+
+// ************* CHANGE MEMBER ****************
+
+app.post("/mbrchange", async (req, res) => {
+    await Requirement.findOneAndUpdate({_id: req.body.cgmbr}, {$set: {assigne: req.body.asgnch}}).exec();
+    res.redirect(`/requirement?pid=${req.body.pid}`);
+});
+
+
+// ************* CHANGE PROGRESS ****************
+app.post("/rqstchange", async (req, res) => {
+    await Requirement.findOneAndUpdate({_id: req.body.cgst}, {$set: {progress: req.body.reqst}}).exec();
+    res.redirect(`/requirement?pid=${req.body.pid}`);
+});
+
+
+// ************ REMOVE REQUIREMENT ************
+
+app.post("/reqremove", async (req, res) => {
+    await Requirement.findByIdAndDelete(req.body.reqrv).exec();
+    res.redirect(`/requirement?pid=${req.body.pid}`);
+});
+
+
+
+
+
+
+
+
+
+
+// **************************************************** MONITORING STARTS ************************************************************
+
+
+
+
+
+// ************* GET MONITORING *************
+
+app.get("/monitor", async (req, res) => {
+
+    const getProjsss = await Project.findById(req.query.pid).exec();
+    const getReksss = await Requirement.find({pid: req.query.pid}).exec();
+    const getMbrss = await Member.find({pid: req.query.pid}).exec();
+    const uInfoss = await User.findById(req.user.id).exec();
+    res.render('monitor', {projInfo: getProjsss, reqInfo: getReksss, reqInfos: getReksss, pIde: req.query.pid, mbrInfo: getMbrss, mbrInfoz: getMbrss, usInfo: uInfoss});
+
+});
+
+
+// ************ ADD MONITORING ************
+
+app.post("/addMont", async (req, res) => {
+    await Requirement.findOneAndUpdate({funcreq: req.body.reqid}, {$set: {design: req.body.dsghr, reqanlsys: req.body.anlhr, coding: req.body.cdhr, testing: req.body.tsthr, pm: req.body.mghr}}).exec();
+    res.redirect(`/monitor?pid=${req.body.pid}`);
+});
+
+
+// ******** Change Req HR *************
+
+app.post("/changeReqhr", async (req, res) => {
+    await Requirement.findOneAndUpdate({_id: req.body.reqhr}, {$set: {reqanlsys: req.body.anlhrs}}).exec();
+    res.redirect(`/monitor?pid=${req.body.pid}`);
+});
+
+
+// ******** Change Design HR *************
+
+app.post("/changeDesg", async (req, res) => {
+    await Requirement.findOneAndUpdate({_id: req.body.dghr}, {$set: {design: req.body.dsghrs}}).exec();
+    res.redirect(`/monitor?pid=${req.body.pid}`);
+});
+
+// ******** Change Coding HR *************
+
+app.post("/changeCode", async (req, res) => {
+    await Requirement.findOneAndUpdate({_id: req.body.cdhr}, {$set: {coding: req.body.cdhrs}}).exec();
+    res.redirect(`/monitor?pid=${req.body.pid}`);
+});
+
+// ******** Change Coding HR *************
+
+app.post("/changetest", async (req, res) => {
+    await Requirement.findOneAndUpdate({_id: req.body.tshr}, {$set: {testing: req.body.tshrs}}).exec();
+    res.redirect(`/monitor?pid=${req.body.pid}`);
+});
+
+
+// ******** Change Coding Project Management *************
+
+app.post("/changepm", async (req, res) => {
+    await Requirement.findOneAndUpdate({_id: req.body.pmhr}, {$set: {pm: req.body.pmhrs}}).exec();
+    res.redirect(`/monitor?pid=${req.body.pid}`);
+});
+
+
+app.post("/delmonitor", async (req, res) => {
+    await Requirement.findByIdAndDelete(req.body.rmvmt).exec();
+    res.redirect(`/monitor?pid=${req.body.pid}`);
+});
+
+
+
+
+
+
+
+
+
+
 
 app.get("/register", function(req, res){
     res.render("register");
 });
+
 
 
 
@@ -272,6 +452,8 @@ app.post("/register", function(req, res){
 });
 
 
+
+
 app.post("/login", function(req, res){
 
     const newProf = new User({
@@ -290,22 +472,15 @@ app.post("/login", function(req, res){
 
 });
 
+
+
 app.get("/login", function(req, res){
     res.render('login');
 });
 
-app.get("/home", function(req, res){
 
-    if(req.isAuthenticated()){
-        User.find({key: req.user.key}, function(err, results){
-            if (err) {
-                res.status(500).send('Ops', err);
-            } else {
-                res.render('home', {teamn: results[0].teamName, ky: results[0].key});
-            }
-        });
-    }
-});
+
+
 
 app.post("/logout", function(req, res){
     req.logout();
@@ -368,7 +543,18 @@ app.listen(process.env.PORT || 3000, function(){
 
 
 
+// app.get("/home", function(req, res){
 
+//     if(req.isAuthenticated()){
+//         User.find({key: req.user.key}, function(err, results){
+//             if (err) {
+//                 res.status(500).send('Ops', err);
+//             } else {
+//                 res.render('home', {teamn: results[0].teamName, ky: results[0].key});
+//             }
+//         });
+//     }
+// });
 
 
 // app.post("/reqs", function(req, res){
@@ -419,4 +605,130 @@ app.listen(process.env.PORT || 3000, function(){
 
 //     res.send(dmrzs);
     
+// });
+
+// app.post("/tdm", async (req, res) => {
+
+// })
+
+// app.get("/tds", async (req, res) => {
+//     // const tdms = await axios.get("http://localhost:3000/tdm/id=rez@e.com");
+//     const tdms = await axios.get("http://localhost:3000/tdm");
+//     console.log(tdms.data);
+// });
+
+// app.get("/tdm", async (req, res) => {
+//     const tdmo = await User.find({}).exec();
+//     res.send(tdmo[0]);
+// });
+
+
+
+
+
+
+// app.post("/addmbr", async (req, res) => {
+    
+//     const newMbr = new Member({
+//         pid: req.body.pisd,
+//         member: req.body.mbrnm
+//     });
+//     newMbr.save();
+//     res.redirect(`/dashboard?rsk=${req.body.pidzs}`);
+
+// });
+
+
+
+
+
+// app.post("/risks", function(req, res){
+//     Project.findOneAndUpdate({_id: req.body.addSt}, {$push: {risks: [{riskdes: req.body.risk, status: req.body.stats, pida: req.body.addSt}]}}, function(err, result){
+
+//         if(err){
+//             console.log(err);
+//         } else {
+//            res.redirect(`/dashboard?rsk=${req.body.addSt}`);
+//         }
+
+//     });
+// });
+
+// app.post("/riskdel", async (req, res) => {
+    
+//     const delreq = await Project.updateMany({}, {$pull: {risks: {_id: req.body.rmv9}}}).exec();
+
+//     res.redirect(`/dashboard?rsk=${req.body.rmmv}`);
+    
+// });
+
+// app.post("/high", async (req, res) => {
+   
+//     const updtsa = await Project.findOneAndUpdate(
+//         {
+//           "risks._id": req.body.hg2},
+//           {$set:{'risks.$.status': req.body.hg1}
+//         }
+//     ).exec();
+//     res.redirect(`/dashboard?rsk=${req.body.hg3}`);
+// });
+
+// app.post("/low", async (req, res) => {
+   
+//     const updtss = await Project.findOneAndUpdate(
+//         {
+//           "risks._id": req.body.lw2},
+//           {$set:{'risks.$.status': req.body.lw1}
+//         }
+//     ).exec();
+//     res.redirect(`/dashboard?rsk=${req.body.lw3}`);
+// });
+
+// app.post("/medium", async (req, res) => {
+   
+//     const updtssz = await Project.findOneAndUpdate(
+//         {
+//           "risks._id": req.body.med2},
+//           {$set:{'risks.$.status': req.body.med1}
+//         }
+//     ).exec();
+//     res.redirect(`/dashboard?rsk=${req.body.med3}`);
+// });
+
+
+
+
+
+
+
+
+// app.post("/monitor", async (req, res) => {
+//     const upmn = await Requirement.findOneAndUpdate({_id: req.body.addMts}, {$set: {design: req.body.ds1, reqanlsys: req.body.rq1, coding: req.body.cod1, testing: req.body.t1, pm: req.body.pm1}}).exec();
+//     res.redirect(`/dashboard?rsk=${req.body.pid5}`);
+    
+// });
+
+
+
+// app.post("/reqs", async (req, res) => {
+
+//     const newReqz = new Requirement({
+//         pid: req.body.addrq,
+//         funcreq: req.body.reqf
+//     });
+//     newReqz.save();
+//     res.redirect(`/dashboard?rsk=${req.body.addrq}`);
+// });
+
+
+
+// app.post("/reqdel", async (req, res) => {
+//     const rqdels = await Requirement.findByIdAndRemove(req.body.rdl).exec();
+//     res.redirect(`/dashboard?rsk=${req.body.pidz}`);
+// });
+
+
+// app.post("/progrs", async (req, res) => {
+//     const addprg = await Requirement.findOneAndUpdate({_id: req.body.pigid}, {$set: {progress: req.body.progrz}});
+//     res.redirect(`/dashboard?rsk=${req.body.pid8}`);
 // });

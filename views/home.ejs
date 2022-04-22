@@ -1,113 +1,159 @@
+<!DOCTYPE html>
 <html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body {
-  font-family: Arial, Helvetica, sans-serif;
-
-}
-
-* {
-  box-sizing: border-box;
-}
-
-
-  
-  /* Add padding to containers */
-  .container {
-    padding: 16px;
-    background-color: white;
-  }
-  
-  /* Full-width input fields */
-  input[type=text], input[type=password] {
-    width: 100%;
-    padding: 15px;
-    margin: 5px 0 22px 0;
-    display: inline-block;
-    border: none;
-    background: #f1f1f1;
-  }
-  
-  input[type=text]:focus, input[type=password]:focus {
-    background-color: #ddd;
-    outline: none;
-  }
-  
-  /* Overwrite default styles of hr */
-  hr {
-    border: 1px solid #f1f1f1;
-    margin-bottom: 25px;
-  }
-  
-  /* Set a style for the submit button */
-  .registerbtn {
-    background-color: #04AA6D;
-    color: white;
-    padding: 16px 20px;
-    margin: 8px 0;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-    opacity: 0.9;
-  }
-  
-  .registerbtn:hover {
-    opacity: 1;
-  }
-  
-  /* Add a blue text color to links */
-  a {
-    color: dodgerblue;
-  }
-  
-  /* Set a grey background color and center the text of the "sign in" section */
-  .signin {
-    background-color: #f1f1f1;
-    text-align: center;
-  }
-
-</style>
+    <head>
+        <title>Home</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
+  <link rel="stylesheet" href="css/table.css" />
 </head>
 <body>
-    <br>
-    <br>
-    <br>
-    <form action="/logout" method="post">
-        <button type="submit">Logout</button>
-    </form>
-    <br>
-    <a href="/lists">Projects</a>
-    <br>
-    <h1><%= teamn %></h1>
-    <h1><%= ky %></h1>
-    <br><br>
-    <form action="/newp" method="post">
-        <div class="container">
-          <h1>Create Project</h1>
 
-          <hr>
-          <input type="text" placeholder="project id" name="idp" required>
-      
-          <input type="text" placeholder="Description" name="des" required>
-          <input type="text" placeholder="Owner" name="owner" required>
-      
-          <input type="text" placeholder="Members" name="memb" required>
-      
-      
-      
-      
-         
-          <hr>
-      
-          <button type="submit" class="registerbtn" onchange="this.form.submit()">Add</button>
-        </div>
-        
-
+<div class="sidebar">
+  <div class="profile">
+    
+    <span class="owner"><%= userInfo.name %> </span>
+    <span class="roll"><%= userInfo.teamName %></span>
+  </div>
+  <ul class="nav">
+    <li class=active>
+      <form action="/home" method="post">
+        <button type="submit" class="abt">Home</button>
       </form>
+      
+    </li>
+    <li class=active>
+      <button class="abt">About</button>
+    </li>
+
+    <li class="btmn">
+      <button class="btt">Logout</button>
+    </li>
+  </ul>
+  <a href="#" class="settings">
+    <i class="fa fa-cog"></i>
+  </a>
+</div>
+
+<button class="toggle-button">
+  <i class="fa fa-bars"></i>
+  <i class="fa fa-arrows-alt"></i>
+</button>
+
+<!-- Usual html, responsive -->
+<article>
+  <div class="container">
+   
+
+    <form action="/newp" method="post" class="reqform">
+      <fieldset id="fieldset-sign-up">
+        <legend>Create Project</legend>
+
+        <label>
+          Project Description
+          <input type="text"
+                 name="prjdesc"
+                 required>
+        </label>
+
+        <label>
+            Owner
+            <input type="text"
+                   name="owner"
+                   required>
+          </label>
+
+          <label>
+            Project Name
+            <input type="text"
+                   name="pname"
+                   required>
+          </label>
+
+
+          
+            <button type="submit" onchange="this.form.submit()" class="next">Add</button>
+         
+
+      
+      </fieldset>
+      
+    </form>
+  
+    <div style="overflow-x: auto;">
+
+        <div class="wrapper">
+          <% projInfo.forEach(function(item) { %>
+            <div class="card">
+                <h3 class="card-title"><%= item.name %> </h3>
+                    <p class="card-content"><%= item.desc %> </p>
+
+                    <form action="/project" method="get">
+                      <button type="submit" name="pid" value="<%= item._id %> " class="card-btn">READ MORE</button>
+                    </form>
+                    
+
+                </div>
+                <% }) %>
+
+            </div>
+
+    </div>
+  </div>
+  
+</article>
+
+  
+
+
+
+   
+  
 
 
 
 
-</body>
+  <script>
+    $(".toggle-button").on("click", function(){
+      $(".sidebar").toggleClass("active")
+      if ($(".sidebar").hasClass("active"))
+        {
+          $("body").addClass("non-margin")
+        } else {
+          $("body").removeClass("non-margin")
+        }
+    })
+
+
+    var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
+  </script>
+
+    </body>
 </html>
+
+
