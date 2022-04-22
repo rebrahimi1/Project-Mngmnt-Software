@@ -20,18 +20,18 @@
   </div>
   <ul class="nav">
     <li class=active>
-      <button class="abt">Home</button>
+      <form action="/home" method="post">
+        <button type="submit" class="abt">Home</button>
+      </form>
     </li>
     <li class=active>
-      <form action="/project" method="get">
-        <button type="submit" name="pid" value="<%= pIde %>" class="abt">Project Details</button>
-      </form>
-      
+      <button class="abt"><i class="fa fa-home"></i>Project Details</button>
     </li>
     <li class="active">
 
       <form action="/requirement" method="get">
-        <button type="submit" name="pid" value="<%= pIde %> " class="abt">Requirements</button>
+        <input name="pid" value="<%= pIde %>" hidden>
+        <button type="submit" class="abt">Requirements</button>
       </form>
       
     </li>
@@ -39,7 +39,8 @@
     <li class="active">
 
       <form action="/monitor" method="get">
-        <button type="submit" name="pid" value="<%= pIde %> " class="abt">Monitoring</button>
+        <input name="pid" value="<%= pIde %>" hidden>
+        <button type="submit" class="abt">Monitoring</button>
       </form>
 
     </li>
@@ -47,7 +48,8 @@
     <li class="active">
 
       <form action="/status" method="get">
-        <button type="submit" name="pid" value="<%= pIde %> " class="abt">Project Status</button>
+        <input name="pid" value="<%= pIde %>" hidden>
+        <button type="submit" class="abt">Project Status</button>
       </form>
 
     </li>
@@ -132,7 +134,8 @@
           </label>
           
         
-        <button type="submit" name="pid" value="<%= pIde %>" onchange="this.form.submit()" class="next">Add</button>
+          <input name="pid" value="<%= pIde %>" hidden>
+          <button type="submit" onchange="this.form.submit()" class="next">Add</button>
       </fieldset>
       
     </form>

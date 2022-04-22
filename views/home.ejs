@@ -90,7 +90,8 @@
                     <p class="card-content"><%= item.desc %> </p>
 
                     <form action="/project" method="get">
-                      <button type="submit" name="pid" value="<%= item._id %> " class="card-btn">READ MORE</button>
+                      <input name="pid" value="<%= item._id %>" hidden>
+                      <button type="submit" class="card-btn" onchange="this.form.submit()">READ MORE</button>
                     </form>
                     
 
