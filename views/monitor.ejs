@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="css/table.css" />
 </head>
 <body>
@@ -25,7 +26,12 @@
       </form>
     </li>
     <li class=active>
-      <button class="abt"><i class="fa fa-home"></i>Project Details</button>
+
+      <form action="/project" method="get">
+        <input name="pid" value="<%= pIde %>" hidden>
+        <button type="submit" class="abt">Project Details</button>
+      </form>
+
     </li>
     <li class="active">
 
@@ -63,9 +69,7 @@
     </li>
 
   </ul>
-  <a href="#" class="settings">
-    <i class="fa fa-cog"></i>
-  </a>
+
 </div>
 
 <button class="toggle-button">
@@ -78,67 +82,7 @@
   <div class="container">
    
 
-    <form action="/addMont" method="post" class="reqform">
-      <fieldset id="fieldset-sign-up">
-        <legend>Project Monitoring</legend>
 
-
-          <label>
-            Requirement
-            <select name="reqid">
-              <option value="">Requirement:</option>
-              <% reqInfo.forEach(function(item) { %>
-              <option value="<%= item.funcreq %>"><%= item.funcreq %></option>
-              <% }) %>
-            </select>
-          </label>
-
-          <label>
-            Analysis
-            <input type="number"
-                   name="anlhr"
-                   placeholder="0"
-                   required>
-          </label>
-
-        <label>
-          Design
-          <input type="number"
-                 name="dsghr"
-                 placeholder="0"
-                 required>
-        </label>
-
-        <label>
-            Coding
-            <input type="number"
-                   name="cdhr"
-                   placeholder="0"
-                   required>
-          </label>
-
-          <label>
-            Testing
-            <input type="number"
-                   name="tsthr"
-                   placeholder="0"
-                   required>
-          </label>
-
-          <label>
-            Management
-            <input type="number"
-                   name="mghr"
-                   placeholder="0"
-                   required>
-          </label>
-          
-        
-          <input name="pid" value="<%= pIde %>" hidden>
-          <button type="submit" onchange="this.form.submit()" class="next">Add</button>
-      </fieldset>
-      
-    </form>
   
     <div style="overflow-x: auto;">
 

@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="css/table.css" />
 </head>
 <body>
@@ -22,7 +23,12 @@
         </form>
       </li>
       <li class=active>
-        <button class="abt"><i class="fa fa-home"></i>Project Details</button>
+  
+        <form action="/project" method="get">
+          <input name="pid" value="<%= pIde %>" hidden>
+          <button type="submit" class="abt">Project Details</button>
+        </form>
+  
       </li>
       <li class="active">
   
@@ -60,9 +66,7 @@
       </li>
   
     </ul>
-    <a href="#" class="settings">
-      <i class="fa fa-cog"></i>
-    </a>
+
   </div>
 
 <button class="toggle-button">
@@ -128,7 +132,7 @@
             </select>
 
             
-              <input name="pid" value="<%= pIde %>">
+              <input name="pid" value="<%= pIde %>" hidden>
               <button type="submit" name="stid" value="<%= item._id %>" class="btnch" onchange="this.form.submit()">Change</button>
             </form>
             
@@ -138,7 +142,7 @@
           <td>
 
             <form action="/riskdel" method="post">
-              <input name="pid" value="<%= pIde %>">
+              <input name="pid" value="<%= pIde %>" hidden>
               <button type="submit" name="rmv9" value="<%= item._id %>" class="btnRmv" onchange="this.form.submit()">Remove</button>
             </form>
 

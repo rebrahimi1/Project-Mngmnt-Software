@@ -192,8 +192,8 @@ app.post("/newmbr", async (req, res) => {
 
 // ************ REMOVE MEMBER ************
 
-app.post("/rmv", async (req, res) => {
-    await Member.findByIdAndDelete(req.body.rvmb).exec();
+app.post("/rmvmbr", async (req, res) => {
+    await Member.findOneAndDelete({pid: req.body.pid}).exec();
     res.redirect(`/project?pid=${req.body.pid}`);
 });
 
@@ -419,7 +419,7 @@ app.post("/delmonitor", async (req, res) => {
 
 
 
-app.get("/register", function(req, res){
+app.get("/", function(req, res){
     res.render("register");
 });
 
@@ -474,9 +474,6 @@ app.post("/login", function(req, res){
 
 
 
-app.get("/login", function(req, res){
-    res.render('login');
-});
 
 
 
@@ -484,7 +481,7 @@ app.get("/login", function(req, res){
 
 app.post("/logout", function(req, res){
     req.logout();
-    res.redirect("/login");
+    res.redirect("/");
 
 });
 
