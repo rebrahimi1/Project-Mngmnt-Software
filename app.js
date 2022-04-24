@@ -485,6 +485,14 @@ app.post("/logout", function(req, res){
 
 });
 
+app.post("/about", async (req, res) => {
+    res.redirect("/about");
+});
+
+app.get("/about", async (req, res) => {
+    // const getUserDetail = await User.findById(req.user.id).exec();
+    res.render('about');
+});
 
 
 
